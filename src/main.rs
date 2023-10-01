@@ -1,11 +1,16 @@
 use std::net::SocketAddr;
 
-use axum::{self, Router};
 use axum::extract::{Path, Query};
 use axum::response::{Html, IntoResponse};
 use axum::routing;
+use axum::{self, Router};
 use serde::Deserialize;
 use tokio;
+use tower_http::services::ServeDir;
+
+mod error;
+pub use error::{Result, Error};
+mod web;
 
 #[derive(Debug, Deserialize)]
 struct HelloParams {
@@ -14,7 +19,10 @@ struct HelloParams {
 
 #[tokio::main]
 async fn main() {
-    let routes = axum::Router::new().merge(routes_hello());
+    let routes = axum::Router::new()
+        .merge(routes_hello())
+        .merge(web::routes_login::routes())
+        .fallback_service(routes_static());
     let addr = SocketAddr::from(([127, 0, 0, 1], 8095));
     println!("->> LISTENING ON {addr}\n");
     axum::Server::bind(&addr)
@@ -40,4 +48,8 @@ fn routes_hello() -> Router {
     Router::new()
         .route("/hello", routing::get(handler_hello))
         .route("/hello2/:name", routing::get(handler_hello2))
+}
+
+fn routes_static() -> Router {
+    Router::new().nest_service("/", ServeDir::new("./"))
 }
