@@ -4,13 +4,15 @@ use serde_json::{json, Value};
 use tower_cookies::{Cookies, Cookie};
 use crate::{Result, Error};
 
+use super::AUTH_TOKEN;
+
 #[derive(Debug, Deserialize)]
 struct LoginPayload {
     username: String,
     pwd: String,
 }
 
-const AUTH_TOKEN: &str = "auth_token";
+
 
 async fn api_login(cookies: Cookies, payload: Json<LoginPayload>) -> Result<Json<Value>> {
     if payload.username == "demo1" && payload.pwd == "welcome" {

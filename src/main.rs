@@ -1,7 +1,6 @@
 use std::net::SocketAddr;
 
 use axum::extract::{Path, Query};
-use axum::http::response;
 use axum::response::{Html, IntoResponse, Response};
 use axum::{routing, middleware};
 use axum::{self, Router};
@@ -13,6 +12,7 @@ use tower_http::services::ServeDir;
 mod error;
 pub use error::{Result, Error};
 mod web;
+mod model;
 
 #[derive(Debug, Deserialize)]
 struct HelloParams {
@@ -49,6 +49,7 @@ async fn handler_hello2(Path(user_name): Path<String>) -> impl IntoResponse {
 }
 
 async fn main_response_mapper(response_in: Response) -> Response {
+    println!("->> {:<12} - main_response_mapper", "RES_MAPPER");
     println!("");
     response_in
 }
