@@ -43,10 +43,7 @@ impl ModelController {
         let lock_result = self.tickets_store.lock().unwrap();
         Ok(lock_result
             .iter()
-            .filter_map(|o| match o {
-                Some(ref ticket) => Some(ticket.clone()),
-                _ => None,
-            })
+            .filter_map(|o| o.as_ref().map(|ticket| ticket.clone()))
             .collect())
     }
 }
