@@ -7,6 +7,7 @@ use axum::{routing, middleware};
 use axum::{self, Router};
 use serde::Deserialize;
 use tokio;
+use tower_cookies::{CookieManagerLayer};
 use tower_http::services::ServeDir;
 
 mod error;
@@ -24,7 +25,8 @@ async fn main() {
         .merge(routes_hello())
         .merge(web::routes_login::routes())
         .fallback_service(routes_static())
-        .layer(middleware::map_response(main_response_mapper));
+        .layer(middleware::map_response(main_response_mapper))
+        .layer(CookieManagerLayer::new());
     let addr = SocketAddr::from(([127, 0, 0, 1], 8095));
     println!("->> LISTENING ON {addr}\n");
     axum::Server::bind(&addr)

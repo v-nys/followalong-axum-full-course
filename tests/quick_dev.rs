@@ -11,5 +11,7 @@ async fn quick_dev() -> Result<()> {
         "pwd": "welcome"
     }));
     req_login.await?.print().await?;
+
+    client.do_get("/hello2/vincent").await?.print().await?;
     Ok(())
 }
