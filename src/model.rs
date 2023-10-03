@@ -47,19 +47,10 @@ impl ModelController {
             .collect())
     }
 
-    async fn delete_ticket(&self, id: u64) -> Result<()> {
+    async fn delete_ticket(&self, id: u64) -> Result<Ticket> {
         let mut guard = self.tickets_store.lock().unwrap();
-        let opt = guard.iter_mut().find(|o| {
-            o.as_ref().is_some_and(|t| t.id == id)
-        });
-        match opt {
-            Some(opt) => {
-                opt.take();
-                return Ok(());
-            }
-            None => {
-                return Err(Error::TicketDeleteFailIdNotFound { id });
-            }
-        }
+        // note: this works because index position = id in this implementation!
+        let ticket = guard.get_mut(id as usize).and_then(|t| t.take());
+        ticket.ok_or(Error::TicketDeleteFailIdNotFound { id })
     }
 }
