@@ -1,31 +1,32 @@
 use std::sync::{Arc, Mutex};
 
-use crate::{Result, Error};
-use serde::Serialize;
+use crate::{Error, Result};
+use serde::{Serialize, Deserialize};
 
 #[derive(Serialize, Clone)]
-struct Ticket {
+pub struct Ticket {
     id: u64,
     title: String,
 }
 
-struct TicketForCreate {
+#[derive(Deserialize)]
+pub struct TicketForCreate {
     title: String,
 }
 
-#[derive(Clone)]
-struct ModelController {
+#[derive(Clone, Default)]
+pub struct ModelController {
     tickets_store: Arc<Mutex<Vec<Option<Ticket>>>>,
 }
 
 impl ModelController {
-    async fn new() -> Result<Self> {
+    pub async fn new() -> Result<Self> {
         Ok(ModelController {
             tickets_store: Arc::default(),
         })
     }
 
-    async fn create_ticket(&self, to_create: TicketForCreate) -> Result<Ticket> {
+    pub async fn create_ticket(&self, to_create: TicketForCreate) -> Result<Ticket> {
         // eventuele error is van ander type dan eigen error type...
         let mut guard = self.tickets_store.lock().unwrap();
         // mutexguard implementeert dereferencing, dus zou wel
@@ -39,7 +40,7 @@ impl ModelController {
         Ok(clone)
     }
 
-    async fn list_tickets(&self) -> Result<Vec<Ticket>> {
+    pub async fn list_tickets(&self) -> Result<Vec<Ticket>> {
         let guard = self.tickets_store.lock().unwrap();
         Ok(guard
             .iter()
@@ -47,7 +48,7 @@ impl ModelController {
             .collect())
     }
 
-    async fn delete_ticket(&self, id: u64) -> Result<Ticket> {
+    pub async fn delete_ticket(&self, id: u64) -> Result<Ticket> {
         let mut guard = self.tickets_store.lock().unwrap();
         // note: this works because index position = id in this implementation!
         let ticket = guard.get_mut(id as usize).and_then(|t| t.take());

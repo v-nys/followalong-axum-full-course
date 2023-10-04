@@ -11,6 +11,8 @@ use tower_http::services::ServeDir;
 
 mod error;
 pub use error::{Result, Error};
+
+use crate::model::ModelController;
 mod web;
 mod model;
 
@@ -21,9 +23,11 @@ struct HelloParams {
 
 #[tokio::main]
 async fn main() {
+    let mc = ModelController::new().await.unwrap();
     let routes = axum::Router::new()
         .merge(routes_hello())
         .merge(web::routes_login::routes())
+        .nest("/api", web::routes_tickets::routes(mc))
         .fallback_service(routes_static())
         .layer(middleware::map_response(main_response_mapper))
         .layer(CookieManagerLayer::new());
