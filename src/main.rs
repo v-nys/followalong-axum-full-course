@@ -15,6 +15,7 @@ pub use error::{Error, Result};
 use crate::model::ModelController;
 mod model;
 mod web;
+mod ctx;
 
 #[derive(Debug, Deserialize)]
 struct HelloParams {
