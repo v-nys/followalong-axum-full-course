@@ -16,7 +16,7 @@ struct LoginPayload {
 
 async fn api_login(cookies: Cookies, payload: Json<LoginPayload>) -> Result<Json<Value>> {
     if payload.username == "demo1" && payload.pwd == "welcome" {
-        cookies.add(Cookie::new(AUTH_TOKEN,"username.expdate.signature"));
+        cookies.add(Cookie::new(AUTH_TOKEN,"user-1.expdate.signature"));
         Ok(Json(json!({
             "result": { "success": true }
         })))

@@ -5,9 +5,6 @@ use serde_json::json;
 async fn quick_dev() -> Result<()> {
     let client = httpc_test::new_client("http://localhost:8095").expect("Failed to get client");
     client.do_get("/hello2/vincent").await?.print().await?;
-
-
-
     client.do_get("/hello2/vincent").await?.print().await?;
 
     let req_create = client.do_post("/api/tickets", json!({
@@ -34,6 +31,5 @@ async fn quick_dev() -> Result<()> {
 
     let req_list = client.do_get("/api/tickets");
     req_list.await?.print().await?;
-
     Ok(())
 }
