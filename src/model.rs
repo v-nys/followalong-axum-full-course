@@ -7,6 +7,7 @@ use serde::{Serialize, Deserialize};
 pub struct Ticket {
     id: u64,
     title: String,
+    cid: u64,
 }
 
 #[derive(Deserialize)]
@@ -26,7 +27,7 @@ impl ModelController {
         })
     }
 
-    pub async fn create_ticket(&self, to_create: TicketForCreate) -> Result<Ticket> {
+    pub async fn create_ticket(&self, to_create: TicketForCreate, cid: u64) -> Result<Ticket> {
         // eventuele error is van ander type dan eigen error type...
         let mut guard = self.tickets_store.lock().unwrap();
         // mutexguard implementeert dereferencing, dus zou wel
@@ -34,6 +35,7 @@ impl ModelController {
         let ticket = Ticket {
             id: safe_id,
             title: to_create.title,
+            cid: cid
         };
         let clone = ticket.clone();
         guard.push(Some(ticket));

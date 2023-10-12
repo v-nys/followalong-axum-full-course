@@ -1,3 +1,4 @@
+use crate::ctx::Ctx;
 use crate::model::{ModelController, Ticket, TicketForCreate};
 use crate::Result;
 use axum::{
@@ -8,13 +9,14 @@ use axum::{
 
 async fn create_ticket(
     State(mc): State<ModelController>,
+    ctx: Ctx,
     Json(tfc): Json<TicketForCreate>,
 ) -> Result<Json<Ticket>> {
-    let result = mc.create_ticket(tfc).await?; // doet Chone het ook met unwrap?
+    let result = mc.create_ticket(tfc, ctx.user_id()).await?; // doet Chone het ook met unwrap?
     Ok(Json(result))
 }
 
-async fn list_tickets(State(mc): State<ModelController>) -> Result<Json<Vec<Ticket>>> {
+async fn list_tickets(State(mc): State<ModelController>, _ctx: Ctx) -> Result<Json<Vec<Ticket>>> {
     let result = mc.list_tickets().await?;
     Ok(Json(result))
 }
@@ -22,6 +24,7 @@ async fn list_tickets(State(mc): State<ModelController>) -> Result<Json<Vec<Tick
 async fn delete_ticket(
     State(mc): State<ModelController>,
     Path(id): Path<u64>,
+    _ctx: Ctx,
 ) -> Result<Json<Ticket>> {
     let result = mc.delete_ticket(id).await?;
     Ok(Json(result))
